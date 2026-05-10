@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Sudoku – Easy</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #eef1f5;
+        padding: 20px;
+        text-align: center;
+    }
+
+    h1 {
+        margin-bottom: 5px;
+        font-size: 32px;
+        color: #333;
+    }
+
+    #timer, #best {
+        font-size: 18px;
+        margin: 3px;
+        color: #444;
+    }
+
+    table {
+        margin: 25px auto;
+        border-collapse: collapse;
+        background: white;
+        box-shadow: 0 0 10px rgba(0,0,0,0.15);
+    }
+
+    td {
+        width: 48px;
+        height: 48px;
+        border: 1px solid #aaa;
+        text-align: center;
+        font-size: 22px;
+        position: relative;
+    }
+
+    input {
+        width: 100%;
+        height: 100%;
+        border: none;
+        text-align: center;
+        font-size: 22px;
+        outline: none;
+        background: transparent;
+    }
+
+    input.correct {
+        background: #d4ffd4;
+    }
+
+    input.wrong {
+        background: #ffd4d4;
+    }
+
+    .bold-border-top    { border-top: 3px solid black !important; }
+    .bold-border-left   { border-left: 3px solid black !important; }
+    .bold-border-right  { border-right: 3px solid black !important; }
+    .bold-border-bottom { border-bottom: 3px solid black !important; }
+
+    #win {
+        font-size: 24px;
+        color: green;
+        margin-top: 20px;
+        display: none;
+        font-weight: bold;
+    }
+</style>
+</head>
+
+<body>
+
+<h1>Sudoku – Easy</h1>
+<div id="timer">Zeit: 0s</div>
+<div id="best">Beste Zeit: –</div>
+
+<table id="grid"></table>
+
+<div id="win">✔ Sudoku gelöst!</div>
+
+<script>
+// ---------------------------
+// TIMER
+// ---------------------------
+let seconds = 0;
+let timerInterval = setInterval(() => {
+    seconds++;
+    document.getElementById("timer").innerText = "Zeit: " + seconds + "s";
+}, 1000);
+
+// Beste Zeit laden
+if (localStorage.getItem("best_easy")) {
+    document.getElementById("best").innerText =
+        "Beste Zeit: " + localStorage.getItem("best_easy") + "s";
+}
+
+// ---------------------------
+// SUDOKU GENERATOR
+// ---------------------------
+function generateSudoku() {
+    let base = [
+        [1,2,3,4,5,6,7,8,9],
+        [4,5,6,7,8,9,1,2,3],
+        [7,8,9,1,2,3,4,5,6],
+        [2,3,4,5,6,7,8,9,1],
+        [5,6,7,8,9,1,2,3,4],
+        [8,9,1,2,3,4,5,6,7],
+        [3,4,5,6,7,8,9,1,2],
+        [6,7,8,9,1,2,3,4,5],
+        [9,1,2,3,4,5,6,7,8]
+    ];
+
+    function shuffle(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            let j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+    }
+
+    let blockOrder = [0,1,2];
+    shuffle(blockOrder);
+
+    let newGrid = [];
+    for (let b of blockOrder) {
+        let rows = [0,1,2];
+        shuffle(rows);
+        for (let r of rows) newGrid.push(base[b*3 + r].slice());
+    }
+
+    let colBlockOrder = [0,1,2];
+    shuffle(colBlockOrder);
+
+    return newGrid.map(row => {
+        let newRow = [];
+        for (let b of colBlockOrder) {
+            let cols = [0,1,2];
+            shuffle(cols);
+            for (let c of cols) newRow.push(row[b*3 + c]);
+        }
+        return newRow;
+    });
+}
+
+// ---------------------------
+// EASY: Felder entfernen
+// ---------------------------
+function makeEasy(grid) {
+    let holes = 40;
+    while (holes > 0) {
+        let r = Math.floor(Math.random() * 9);
+        let c = Math.floor(Math.random() * 9);
+        if (grid[r][c] !== 0) {
+            grid[r][c] = 0;
+            holes--;
+        }
+    }
+    return grid;
+}
+
+// ---------------------------
+// RENDER
+// ---------------------------
+let solution = generateSudoku();
+let puzzle = JSON.parse(JSON.stringify(solution));
+puzzle = makeEasy(puzzle);
+
+let table = document.getElementById("grid");
+
+for (let r = 0; r < 9; r++) {
+    let row = document.createElement("tr");
+    for (let c = 0; c < 9; c++) {
+        let cell = document.createElement("td");
+
+        if (r % 3 === 0) cell.classList.add("bold-border-top");
+        if (c % 3 === 0) cell.classList.add("bold-border-left");
+        if (r === 8) cell.classList.add("bold-border-bottom");
+        if (c === 8) cell.classList.add("bold-border-right");
+
+        if (puzzle[r][c] === 0) {
+            let inp = document.createElement("input");
+            inp.maxLength = 1;
+
+            inp.oninput = () => validateCell(inp, r, c);
+            cell.appendChild(inp);
+        } else {
+            cell.innerText = puzzle[r][c];
+        }
+
+        row.appendChild(cell);
+    }
+    table.appendChild(row);
+}
+
+// ---------------------------
+// LIVE VALIDATION
+// ---------------------------
+function validateCell(inp, r, c) {
+    let val = parseInt(inp.value);
+
+    if (!val || val < 1 || val > 9) {
+        inp.classList.remove("correct", "wrong");
+        return;
+    }
+
+    if (val === solution[r][c]) {
+        inp.classList.add("correct");
+        inp.classList.remove("wrong");
+    } else {
+        inp.classList.add("wrong");
+        inp.classList.remove("correct");
+    }
+
+    checkWin();
+}
+
+// ---------------------------
+// CHECK WIN
+// ---------------------------
+function checkWin() {
+    let inputs = document.querySelectorAll("input");
+
+    for (let inp of inputs) {
+        if (inp.value === "" || inp.classList.contains("wrong")) return;
+    }
+
+    clearInterval(timerInterval);
+    document.getElementById("win").style.display = "block";
+
+    let best = localStorage.getItem("best_easy");
+    if (!best || seconds < best) {
+        localStorage.setItem("best_easy", seconds);
+        document.getElementById("best").innerText = "Beste Zeit: " + seconds + "s";
+    }
+}
+</script>
+
+</body>
+</html>
