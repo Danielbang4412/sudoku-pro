@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Sudoku-Pro</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f4f4f4;
+        padding: 20px;
+    }
+    h1 {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    .sudoku-row {
+        display: flex;
+        align-items: center;
+        background: white;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    .title {
+        width: 250px;
+        font-size: 20px;
+        font-weight: bold;
+    }
+    .info {
+        margin-left: 10px;
+        margin-right: 20px;
+        cursor: pointer;
+        font-size: 22px;
+        font-weight: bold;
+        color: #555;
+    }
+    .popup {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 20px;
+        width: 350px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        z-index: 1000;
+    }
+    .popup h2 {
+        margin-top: 0;
+    }
+    .close {
+        float: right;
+        cursor: pointer;
+        font-size: 20px;
+        font-weight: bold;
+    }
+    .buttons a {
+        padding: 8px 15px;
+        margin-right: 10px;
+        background: #0078ff;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: bold;
+    }
+</style>
+
+<script>
+function openPopup(id) {
+    document.getElementById(id).style.display = "block";
+}
+function closePopup(id) {
+    document.getElementById(id).style.display = "none";
+}
+</script>
+</head>
+
+<body>
+
+<h1>Sudoku-Pro</h1>
+
+<!-- CLASSIC -->
+<div class="sudoku-row">
+    <div class="title">Klassisch 9×9</div>
+    <div class="info" onclick="openPopup('p1')">?</div>
+    <div class="buttons">
+        <a href="Classic_E.html">E</a>
+        <a href="Classic_M.html">M</a>
+        <a href="Classic_H.html">H</a>
+    </div>
+</div>
+
+<div class="popup" id="p1">
+    <span class="close" onclick="closePopup('p1')">X</span>
+    <h2>Klassisches Sudoku</h2>
+    <p>Ein klassisches 9×9‑Sudoku besteht aus neun Zeilen, neun Spalten und neun 3×3‑Blöcken. Jede Zahl von 1 bis 9 darf in jeder Zeile, Spalte und jedem Block nur einmal vorkommen.</p>
+</div>
+
+<!-- MEIN NACHBAR SUDOKU -->
+<div class="sudoku-row">
+    <div class="title">Mein Nachbar Sudoku</div>
+    <div class="info" onclick="openPopup('p2')">?</div>
+    <div class="buttons">
+        <a href="MNS_E.html">E</a>
+        <a href="MNS_M.html">M</a>
+        <a href="MNS_H.html">H</a>
+    </div>
+</div>
+
+<div class="popup" id="p2">
+    <span class="close" onclick="closePopup('p2')">X</span>
+    <h2>Mein Nachbar Sudoku</h2>
+    <p>Bei diesem Sudoku‑Typ müssen benachbarte Felder bestimmte Bedingungen erfüllen. Häufig bedeutet dies, dass zwei angrenzende Zellen sich um genau 1 unterscheiden müssen oder bestimmte Nachbarschaftsregeln gelten.</p>
+</div>
+
+<!-- UNGERADER NACHBAR SUDOKU -->
+<div class="sudoku-row">
+    <div class="title">Ungerader Nachbar Sudoku</div>
+    <div class="info" onclick="openPopup('p3')">?</div>
+    <div class="buttons">
+        <a href="UNS_E.html">E</a>
+        <a href="UNS_M.html">M</a>
+        <a href="UNS_H.html">H</a>
+    </div>
+</div>
+
+<div class="popup" id="p3">
+    <span class="close" onclick="closePopup('p3')">X</span>
+    <h2>Ungerader Nachbar Sudoku</h2>
+    <p>Hier gilt die Regel: Wenn zwei Felder orthogonal benachbart sind, muss mindestens eines der beiden Felder eine ungerade Zahl enthalten. Dadurch entstehen neue logische Muster und Lösungswege.</p>
+</div>
+
+<!-- SUDOKU X -->
+<div class="sudoku-row">
+    <div class="title">Sudoku X</div>
+    <div class="info" onclick="openPopup('p4')">?</div>
+    <div class="buttons">
+        <a href="X_E.html">E</a>
+        <a href="X_M.html">M</a>
+        <a href="X_H.html">H</a>
+    </div>
+</div>
+
+<div class="popup" id="p4">
+    <span class="close" onclick="closePopup('p4')">X</span>
+    <h2>Sudoku X</h2>
+    <p>Beim Sudoku X gelten zusätzlich zu den normalen Regeln auch die beiden Hauptdiagonalen als Bereiche, in denen die Zahlen 1 bis 9 jeweils genau einmal vorkommen müssen.</p>
+</div>
+
+</body>
+</html>
+
